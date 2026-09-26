@@ -1,0 +1,72 @@
+{
+  "id": "sample-achievement",
+  "name": "Sample – Certificate of Achievement",
+  "backgroundImage": "background.png",
+  "canvasSize": { "width": 1754, "height": 1240 },
+  "elements": [
+    {
+      "id": "sample-name",
+      "type": "text",
+      "binding": "student_name",
+      "x": 877,
+      "y": 445,
+      "fontFamily": "Noto Serif",
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "fontStyle": "normal",
+      "color": "#1a3a6b",
+      "align": "center",
+      "maxWidth": 1300,
+      "lineHeight": 1.2,
+      "defaultValue": "Student Name"
+    },
+    {
+      "id": "sample-roll",
+      "type": "text",
+      "binding": "roll_no",
+      "x": 877,
+      "y": 560,
+      "fontFamily": "Noto Sans",
+      "fontSize": 26,
+      "fontWeight": "normal",
+      "fontStyle": "normal",
+      "color": "#444444",
+      "align": "center",
+      "maxWidth": 900,
+      "lineHeight": 1.2,
+      "defaultValue": "Roll No."
+    },
+    {
+      "id": "sample-course",
+      "type": "text",
+      "binding": "course",
+      "x": 877,
+      "y": 690,
+      "fontFamily": "Noto Serif",
+      "fontSize": 40,
+      "fontWeight": "normal",
+      "fontStyle": "normal",
+      "color": "#222222",
+      "align": "center",
+      "maxWidth": 1200,
+      "lineHeight": 1.2,
+      "defaultValue": "Course / Program"
+    },
+    {
+      "id": "sample-date",
+      "type": "text",
+      "binding": "date",
+      "x": 530,
+      "y": 1035,
+      "fontFamily": "Noto Sans",
+      "fontSize": 26,
+      "fontWeight": "normal",
+      "fontStyle": "normal",
+      "color": "#333333",
+      "align": "center",
+      "maxWidth": 300,
+      "lineHeight": 1.2,
+      "defaultValue": "Date"
+    }
+  ]
+}
