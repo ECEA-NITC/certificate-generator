@@ -1,4 +1,5 @@
 # Certificate Generator
+#commit-new
 
 Local-only Electron desktop app for generating certificates in bulk. Design a certificate once, import a spreadsheet of recipients, and export PNG images, individual PDFs, or one merged PDF.
 
