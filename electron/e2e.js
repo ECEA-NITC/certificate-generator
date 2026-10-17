@@ -1,11 +1,15 @@
 import { app, BrowserWindow } from 'electron';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { exportBatch } from './ipc/exportHandlers.js';
 import { parseCSV } from './ipc/dataHandlers.js';
 
-const OUT = '/tmp/opencode/cert-e2e/out';
-const F = '/tmp/opencode/cert-e2e';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const F = path.join(os.tmpdir(), 'opencode', 'cert-e2e');
+const OUT = path.join(F, 'out');
+const SAMPLES = path.join(__dirname, '..', 'resources', 'sample-templates');
 
 function log(...args) { fs.writeSync(1, args.join(' ') + '\n'); }
 
@@ -14,8 +18,17 @@ app.whenReady().then(async () => {
   const keeper = new BrowserWindow({ show: false, webPreferences: { sandbox: true } });
   void keeper;
   try {
-    fs.rmSync(OUT, { recursive: true, force: true });
+    fs.rmSync(F, { recursive: true, force: true });
     fs.mkdirSync(OUT, { recursive: true });
+
+    // Stage self-contained fixtures so the test runs on any platform / clean clone.
+    fs.copyFileSync(path.join(SAMPLES, 'background.png'), path.join(F, 'bg.png'));
+    // Normalize to LF so the appended row isn't broken by mixed line endings.
+    const sampleCsv = fs.readFileSync(path.join(SAMPLES, 'students.csv'), 'utf-8')
+      .replace(/\r\n/g, '\n')
+      .trimEnd();
+    // Append one deliberately incomplete row to exercise the missing-required-field path.
+    fs.writeFileSync(path.join(F, 'students.csv'), `${sampleCsv}\n,21CS999,Computer Science,25 Sep 2026\n`, 'utf-8');
 
     const csv = await parseCSV(path.join(F, 'students.csv'));
     log('parsed rows:', csv.rows.length, 'headers:', csv.headers.join(','));
@@ -59,9 +72,12 @@ app.whenReady().then(async () => {
     const pngBytes = files.filter((f) => f.endsWith('.png')).map((f) => fs.statSync(path.join(OUT, f)).size);
     log('png sizes:', pngBytes.join(', '));
 
-    const ok = pngResult.results.length === 4 &&
+    const EXPECTED_ROWS = 6; // 6 valid rows in the sample CSV
+    const ok = pngResult.results.length === EXPECTED_ROWS &&
       pngResult.errors.length === 1 &&
-      files.some((f) => f.endsWith('.png') && f.length > 5) &&
+      mergedResult.results.length - 1 === EXPECTED_ROWS && // minus the merged-file entry
+      pdfResult.results.length === EXPECTED_ROWS &&
+      files.filter((f) => f.endsWith('.png')).length === EXPECTED_ROWS &&
       files.some((f) => f.includes('merged') && f.endsWith('.pdf'));
     log(ok ? 'E2E PASS' : 'E2E FAIL');
     app.exit(ok ? 0 : 1);

@@ -379,15 +379,24 @@ export default function AdvancedMode() {
     try {
       const loaded = typeof entry === 'string' ? await window.api.template.load(entry) : await window.api.template.load(entry.filePath);
       imagesCacheRef.current.clear();
+      // Cache any src (data URL or file path) so background *and* image elements render.
+      const cacheFromSrc = async (src, key) => {
+        const dataUrl = src.startsWith('data:') ? src : await window.api.fs.readAsDataUrl(src);
+        const img = new Image();
+        img.src = dataUrl;
+        await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
+        imagesCacheRef.current.set(key, img);
+        return dataUrl;
+      };
       if (loaded.backgroundImage) {
         try {
-          const dataUrl = await window.api.fs.readAsDataUrl(loaded.backgroundImage);
-          const img = new Image();
-          img.src = dataUrl;
-          await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
-          imagesCacheRef.current.set(loaded.backgroundImage, img);
-          setBackgroundDataUrl(dataUrl);
+          setBackgroundDataUrl(await cacheFromSrc(loaded.backgroundImage, loaded.backgroundImage));
         } catch { /* keep template without visible bg */ }
+      }
+      for (const el of loaded.elements || []) {
+        if (el.type === 'image' && el.imageSrc) {
+          try { await cacheFromSrc(el.imageSrc, el.imageSrc); } catch { /* leave blank */ }
+        }
       }
       setTemplate(loaded);
       templateRef.current = loaded;

@@ -77,12 +77,13 @@ resources/           bundled fonts + sample templates
 
 ```bash
 npm run build:vite
-timeout 120 npx electron electron/e2e.js --no-sandbox --disable-gpu     # export pipeline
-timeout 60  npx electron electron/smoke.js --no-sandbox --disable-gpu    # UI smoke + screenshot
+npm run test:e2e      # export pipeline (PNG / merged PDF / per-student PDF)
+npm run test:smoke    # UI smoke + screenshot
 ```
 
-`e2e.js` writes PNGs/PDFs to `/tmp/opencode/cert-e2e/out/` and asserts `E2E PASS`;
-`smoke.js` asserts the editor renders text, fonts are loaded and the sample template seeds.
+`e2e.js` writes PNGs/PDFs to a temp folder (`cert-e2e/out` under your OS temp directory) and asserts `E2E PASS`;
+`smoke.js` screenshots to `ui.png` in that same temp folder and asserts the editor renders text, fonts are loaded and the sample template seeds.
+Both tests run on Windows, macOS and Linux.
 
 ## Security
 

@@ -7,11 +7,13 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
     "dev:vite": "vite",
-    "dev:electron": "wait-on http://localhost:5173 && NODE_ENV=development electron electron/main.js",
+    "dev:electron": "wait-on http://localhost:5173 && electron electron/main.js",
     "build": "npm run build:vite && npm run build:electron",
     "build:vite": "vite build",
     "build:electron": "electron-builder",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "electron electron/e2e.js --no-sandbox --disable-gpu",
+    "test:smoke": "electron electron/smoke.js --no-sandbox --disable-gpu"
   },
   "keywords": [],
   "author": "",
